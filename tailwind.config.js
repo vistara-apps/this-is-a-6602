@@ -11,6 +11,7 @@ export default {
         accent: 'hsl(280 50% 50%)',
         surface: 'hsl(0 0% 100%)',
         bg: 'hsl(220 15% 95%)',
+        border: 'hsl(220 15% 85%)',
       },
       borderRadius: {
         'sm': '6px',
