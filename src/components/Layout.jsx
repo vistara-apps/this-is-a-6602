@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { useSubscription } from '../contexts/SubscriptionContext'
 import { 
   Home,
   FileText,
@@ -8,13 +9,18 @@ import {
   Search,
   User,
   LogOut,
-  Sparkles
+  Sparkles,
+  CheckSquare,
+  CreditCard,
+  Settings
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 const Layout = ({ children }) => {
-  const { user, signOut } = useAuth()
+  const { user, userProfile, signOut } = useAuth()
+  const { getCurrentPlan } = useSubscription()
   const location = useLocation()
+  const currentPlan = getCurrentPlan()
 
   const handleSignOut = async () => {
     const { error } = await signOut()
@@ -29,6 +35,7 @@ const Layout = ({ children }) => {
     { path: '/', icon: Home, label: 'Dashboard' },
     { path: '/note', icon: FileText, label: 'New Note' },
     { path: '/meetings', icon: Video, label: 'Meetings' },
+    { path: '/action-items', icon: CheckSquare, label: 'Action Items' },
     { path: '/search', icon: Search, label: 'Search' },
   ]
 
@@ -69,6 +76,22 @@ const Layout = ({ children }) => {
               )
             })}
           </nav>
+
+          {/* Subscription Banner */}
+          {currentPlan.id === 'free' && (
+            <div className="mt-6 p-4 bg-purple-100 rounded-lg">
+              <h3 className="text-sm font-medium text-purple-800 mb-2">Upgrade to Pro</h3>
+              <p className="text-xs text-purple-700 mb-3">
+                Get unlimited meetings, advanced AI features, and more.
+              </p>
+              <Link
+                to="/subscription"
+                className="w-full text-center block text-xs gradient-bg text-white py-2 rounded-lg font-medium transition-all duration-200 hover:shadow-lg"
+              >
+                Upgrade Now
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* User section */}
@@ -81,16 +104,39 @@ const Layout = ({ children }) => {
               <p className="text-sm font-medium text-gray-800 truncate">
                 {user?.email}
               </p>
-              <p className="text-xs text-gray-600">Free Plan</p>
+              <p className="text-xs text-gray-600 flex items-center gap-1">
+                {currentPlan.id === 'pro' ? (
+                  <>
+                    <span className="inline-block w-2 h-2 bg-green-500 rounded-full"></span>
+                    Pro Plan
+                  </>
+                ) : (
+                  <>
+                    <span className="inline-block w-2 h-2 bg-gray-400 rounded-full"></span>
+                    Free Plan
+                  </>
+                )}
+              </p>
             </div>
           </div>
-          <button
-            onClick={handleSignOut}
-            className="flex items-center gap-3 w-full px-4 py-2 text-gray-700 hover:bg-white/50 rounded-lg transition-colors duration-200"
-          >
-            <LogOut className="w-4 h-4" />
-            <span className="text-sm">Sign Out</span>
-          </button>
+          
+          <div className="space-y-2">
+            <Link
+              to="/subscription"
+              className="flex items-center gap-3 w-full px-4 py-2 text-gray-700 hover:bg-white/50 rounded-lg transition-colors duration-200"
+            >
+              <CreditCard className="w-4 h-4" />
+              <span className="text-sm">Subscription</span>
+            </Link>
+            
+            <button
+              onClick={handleSignOut}
+              className="flex items-center gap-3 w-full px-4 py-2 text-gray-700 hover:bg-white/50 rounded-lg transition-colors duration-200"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="text-sm">Sign Out</span>
+            </button>
+          </div>
         </div>
       </div>
 
